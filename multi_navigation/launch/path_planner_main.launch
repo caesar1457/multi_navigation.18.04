@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Map configuration arguments -->
+  <arg name="filename_image" value="$(find multi_navigation)/maps/lab_maps.pgm" />
+  <arg name="filename_yaml" value="$(find multi_navigation)/maps/map.yaml" />
+  
+  <!-- <arg name="filename_image" value="$(find path_planner)/config/lab_maps.pgm" />
+  <arg name="filename_yaml" value="$(find path_planner)/config/lab_maps.yaml" /> -->
+
+  <!-- <arg name="filename_image" value="$(find path_planner)/config/maze.png" />
+  <arg name="filename_yaml" value="$(find path_planner)/config/maze.yaml" /> -->
+
+  <!-- SLAM or Map Server Node -->
+  <node pkg="map_server" type="map_server" name="map_server" required="true" args="$(arg filename_yaml)" />
+
+  <!-- RViz for Visualization -->
+  <node pkg="rviz" type="rviz" name="rviz" required="true" args="-d $(find multi_navigation)/rviz/planner_conf.rviz" />
+
+  <!-- Number of Robots -->
+  <arg name="num_robots" value="2" />
+  <param name="/num_robots" value="$(arg num_robots)"/>
+
+  <!-- Path Planner Nodes for Each Robot -->
+  <node pkg="multi_navigation" type="path_planner.py" name="path_planner" output="screen">
+
+    <!-- grid resolution -->
+    <param name="filename" type="string" value="$(arg filename_image)"/>
+    <param name="map_resolution" type="double" value="0.01"/>
+
+    <!-- tunable parameters -->
+    <param name="grid_step_size" type="int" value="10"/>
+    <param name="show_connectivity" value="false"/>
+    <param name="heuristic_weight" value="1.0"/>
+    <param name="alpha" value="0.1"/>
+    <param name="beta" value="0.1"/>
+
+    <rosparam param="/robot_1">
+      robot_id: 1
+      startx: 50
+      starty: 300
+      goalx: 530
+      goaly: 210
+    </rosparam>
+    <rosparam param="/robot_2">
+      robot_id: 2
+      startx: 120
+      starty: 380
+      goalx: 500
+      goaly: 400
+    </rosparam>
+  </node>
+</launch>
